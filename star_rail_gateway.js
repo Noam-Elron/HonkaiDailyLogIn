@@ -1,10 +1,8 @@
-const baseURL = 'https://sg-public-api.hoyolab.com/event/luna/os/sign';
-
-
 class StarRailer 
 {
     constructor(cookies, account_id) 
     {
+        this.baseURL = 'https://sg-public-api.hoyolab.com/event/luna/os/sign';
         this.cookies = this.parse_cookies(cookies);
         this.user_agent =  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
         this.payload = {"act_id": `${account_id}`, "lang": "en-us"};
@@ -33,7 +31,7 @@ class StarRailer
         for (let i = 0; i < this.cookies.length; i++) 
         {
             options.headers.Cookie = this.cookies[i];
-            let resp = UrlFetchApp.fetch(baseURL, options);
+            let resp = UrlFetchApp.fetch(this.baseURL, options);
             let resp_code = resp.getResponseCode();
 
             if (resp_code === 200) 
@@ -67,7 +65,7 @@ class StarRailer
             contentType : 'application/json, text/plain, */*',
             headers : header,
         };
-    const account_info = UrlFetchApp.fetch(baseURL + `/info?lang=en-us&act_id=${this.account_id}`, options);
+    const account_info = UrlFetchApp.fetch(this.baseURL + `/info?lang=en-us&act_id=${this.account_id}`, options);
     let resp_code = resp.getResponseCode();
 
     if (resp_code !== 200) 
@@ -78,8 +76,8 @@ class StarRailer
 
     const data = account_info.getAllHeaders().data;
     
-    };
-};
+    }
+}
 
 
 async function main()
@@ -88,4 +86,8 @@ async function main()
     let account_id = '';
     user = StarRailer(cookies, account_id);
     user.login();
-};
+}
+
+
+
+export {StarRailer};
