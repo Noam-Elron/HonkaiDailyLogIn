@@ -14,14 +14,23 @@ class StarRailer
         const monthly_rewards = this.fetch_info('home', this.cookies[0]);
         for (let i = 0; i < this.cookies.length; i++) 
         {
-            const account_info = await this.#fetch_info('info', this.cookies[i]);
-             
+            const info = await this.#fetch_info('info', this.cookies[i]);
+            const account_info = {
+                date : info.today,
+                sign_total : info.total_sign_day,
+                already_claimed : info.is_sign,
+                missed : info.sign_cnt_missed
+            }
 
+            if (already_claimed) {
+                Logger.log("You've already signed in today, remember to log in tommorow!")
+            }
         };
     }
 
     async #fetch_info(url_add_on, cookie) 
     {
+        // Method to specifically check data inside request.
         this.#request_options.headers.Cookie = cookie
         return fetch(this.baseURL + url_add_on + '?' + this.account_id, options).getAllHeaders().data;
     }
@@ -46,6 +55,7 @@ class StarRailer
         {
             return cookies.split("#");
         }
+        // If cookies is an empty string/null/undefined then Error will be thrown.
         throw new Error("Inputted Cookies Format Incorrect")
     };
 }
