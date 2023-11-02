@@ -37,23 +37,6 @@ class StarRailer
         const data = account_info.data;
         return data;
     }
-    static fetch(url, options)
-    {
-        const resp = UrlFetchApp.fetch(url, options);
-        const resp_code = resp.getResponseCode();
-
-        if (resp_code === 200) 
-        {
-            return resp;
-        };
-        throw new Error("HTTP Error: " + resp_code);
-    }
-
-    static parse_cookies(cookies) 
-    /// Seperated multiple accounts in case < 1 is inputted. Even if only one it leaves it in the same format so no change neccesary
-    {
-        return cookies.split("#");
-    };
 
     get options() 
     {
@@ -68,6 +51,25 @@ class StarRailer
         }
         this.#request_options.method = method;
     }
+
+    static fetch(url, options)
+    // Generic method to prevent repetitiveness of whether a request returns 200. Further error checking for specific error codes will be added once testing commences.
+    {
+        const resp = UrlFetchApp.fetch(url, options);
+        const resp_code = resp.getResponseCode();
+
+        if (resp_code === 200) 
+        {
+            return resp;
+        };
+        throw new Error("HTTP Error: " + resp_code);
+    }
+
+    static parse_cookies(cookies) 
+    // Seperated multiple accounts in case < 1 is inputted. Even if only one it leaves it in the same format so no change neccesary
+    {
+        return cookies.split("#");
+    };
 }
 
 
