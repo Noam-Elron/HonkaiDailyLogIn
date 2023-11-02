@@ -33,7 +33,7 @@ class StarRailer
 
     async monthly_rewards_list(cookie)
     {
-        return await this.fetch_info('home?lang=en-us&act_id=e202303301540311')
+        const account_info = await this.fetch_info('home?lang=en-us&act_id=e202303301540311');
         const data = account_info.data;
         return data;
     }
