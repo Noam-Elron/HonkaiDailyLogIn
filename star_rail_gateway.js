@@ -11,9 +11,10 @@ class StarRailer
     async main() 
     {
         // There has to be atleast one cookie, so in order to not repeat this request twice(because this is data that is relevent to a current month, hence shared by all users)
-        const monthly_rewards = this.fetch_info('home', this.cookies[0]);
+        const monthly_rewards = this.#fetch_info('home', this.cookies[0]);
         for (let i = 0; i < this.cookies.length; i++) 
         {
+            Logger.log(`Account: ${i+1}`);
             const info = await this.#fetch_info('info', this.cookies[i]);
             const account_info = {
                 date : info.today,
@@ -22,31 +23,33 @@ class StarRailer
                 missed : info.sign_cnt_missed
             }
 
-            if (already_claimed) {
-                Logger.log("You've already signed in today, remember to log in tommorow!")
+            Logger.log(`Total rewards claimed this month: ${account_info.sign_total}, Total rewards missed this month: ${account_info.missed}`);
+
+            if (account_info.already_claimed) {
+                Logger.log(`You've already claimed your rewards for today - ${account_info.date}, remember to log in tommorow!`);
+                continue;
             }
+            const sign = fetch(this.baseURL + "sign", this.cookies[i]);
+            if (sign.ok) 
+            {
+            Logger.log(`You've succesfully signed in Trailblazer, here is your reward: ${monthly_rewards.awards[i]}`);
+            }
+            
         };
     }
 
     async #fetch_info(url_add_on, cookie) 
     {
-        // Method to specifically check data inside request.
+        // Method to specifically check data inside request and check if request failed.
         this.#request_options.headers.Cookie = cookie
-        return fetch(this.baseURL + url_add_on + '?' + this.account_id, options).getAllHeaders().data;
-    }
-
-    static fetch(url, options)
-    // Generic method to prevent repetitiveness of whether a request returns 200. Further error checking for specific error codes will be added once testing commences.
-    {
-        const resp = UrlFetchApp.fetch(url, options);
-        const resp_code = resp.getResponseCode();
-
-        if (resp_code === 200) 
+        const resp = await fetch(this.baseURL + url_add_on + '?' + this.account_id, options);
+        if (resp.ok) 
         {
-            return resp;
+            return resp.headers.data;
         };
         throw new Error("HTTP Error: " + resp_code);
     }
+
 
     static parse_cookies(cookies) 
     // Seperated multiple accounts in case < 1 is inputted. Even if only one it leaves it in the same format so no change neccesary
