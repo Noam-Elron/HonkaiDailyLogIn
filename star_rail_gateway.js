@@ -1,3 +1,5 @@
+import { HttpException } from "./errors";
+
 class StarRailer 
 {
     static baseURL = 'https://sg-public-api.hoyolab.com/event/luna/os/';
@@ -33,8 +35,10 @@ class StarRailer
             if (sign.ok) 
             {
             Logger.log(`You've succesfully signed in Trailblazer, here is your reward: ${monthly_rewards.awards[i]}`);
+            continue
             }
-            
+            throw new HttpException(sign.status)
+
         };
     }
 
@@ -47,7 +51,7 @@ class StarRailer
         {
             return resp.headers.data;
         };
-        throw new Error("HTTP Error: " + resp_code);
+        throw new HttpException(resp.status);
     }
 
 
