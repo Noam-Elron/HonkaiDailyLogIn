@@ -13,7 +13,7 @@ class StarRailer
     async main() 
     {
         // There has to be atleast one cookie(otherwise parse_cookies would throw an error), so in order to not repeat this request twice(because this is data that is relevent to a current month, hence shared by all users)
-        const monthly_rewards = this.#fetch_info('home', this.cookies[0]);
+        const monthly_rewards = await this.#fetch_info('home', this.cookies[0]);
         for (let i = 0; i < this.cookies.length; i++) 
         {
             Logger.log(`Account: ${i+1}`);
@@ -31,7 +31,7 @@ class StarRailer
                 Logger.log(`You've already claimed your rewards for today - ${account_info.date}, remember to log in tommorow!`);
                 continue;
             }
-            const sign = fetch(this.baseURL + "sign", this.cookies[i]);
+            const sign = await fetch(this.baseURL + "sign", this.cookies[i]);
             if (sign.ok) 
             {
             Logger.log(`You've succesfully signed in Trailblazer, here is your reward: ${monthly_rewards.awards[i]}`);
@@ -65,15 +65,6 @@ class StarRailer
         // If cookies is an empty string/null/undefined then a generic Error will be thrown.
         throw new Error("Inputted Cookies Format Incorrect")
     };
-}
-
-
-async function main()
-{
-    let cookies = '';
-    let account_id = '';
-    user = StarRailer(cookies, account_id);
-    user.login();
 }
 
 
